@@ -1,0 +1,101 @@
+services:
+  zipkin-server:
+    image: openzipkin/zipkin:3.5.1
+    ports:
+      - "9411:9411"
+    restart: always
+    networks:
+      - erudio-network
+
+  naming-server:
+    image: joaremio/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - erudio-network
+    depends_on:
+      - zipkin-server
+
+  api-gateway:
+    image: joaremio/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - "8765:8765"
+    restart: always
+    networks:
+      - erudio-network
+    depends_on:
+      - zipkin-server
+      - naming-server
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+
+  book-db:
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: 1234567
+      POSTGRES_DB: book_service
+    networks:
+      - erudio-network
+
+  exchange-db:
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: exchange_service
+    networks:
+      - erudio-network
+
+  exchange-service:
+    image: joaremio/exchange-service
+    restart: always
+    build:
+      context: ./exchange-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://exchange-db:5432/exchange_service
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8000:8000"
+    depends_on:
+      - zipkin-server
+      - naming-server
+      - exchange-db
+    networks:
+      - erudio-network
+
+  book-service:
+    image: joaremio/book-service
+    restart: always
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://book-db:5432/book_service
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: 1234567
+    ports:
+      - "8100:8100"
+    depends_on:
+      - zipkin-server
+      - naming-server
+      - book-db
+    networks:
+      - erudio-network
+
+networks:
+  erudio-network:
+    name: erudio-network
+    driver: bridge
