@@ -27,11 +27,11 @@ jobs:
 
       - name: Build Eureka Naming Server Docker Image
         working-directory: ./naming-server
-        run: mvn spring-boot:build-image
+        run: mvn spring-boot:build-image -DskipTests
 
       - name: Build API Gateway Docker Image
         working-directory: ./api-gateway
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Build Exchange Microservice Docker Image
         working-directory: ./exchange-service
@@ -49,9 +49,13 @@ jobs:
         run:
           tag ${{ secrets.DOCKER_USERNAME }}/naming-server:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/naming-server:latest
           tag ${{ secrets.DOCKER_USERNAME }}/naming-server:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/naming-server:${{github.RUN_ID}}
+          tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
+          tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{github.RUN_ID}}
 
 
       - name: Push Docker Images to Docker Hub
         run:
           docker push ${{ secrets.DOCKER_USERNAME }}/naming-server:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/naming-server:${{github.RUN_ID}}
+          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{github.RUN_ID}}
