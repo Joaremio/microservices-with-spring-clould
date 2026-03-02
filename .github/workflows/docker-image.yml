@@ -1,57 +1,65 @@
-name: Docker Image CI
+name: Microservices Continuous Deployment with Github Actions
 
 on:
   push:
     branches:
-      - main
-
+      - "main"
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Puxar o código do repositório
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Login no Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_ACCESS_TOKEN}}
 
-      # 3️⃣ Configurar Java 21 (necessário para Spring Boot)
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
           java-version: '21'
+          distribution: 'adopt'
 
-      # 4️⃣ Build de todos os serviços com Docker Compose
+      - name: Build Eureka Naming Server Docker Image
+        working-directory: ./naming-server
+        run: mvn spring-boot:build-image
+
+      - name: Build API Gateway Docker Image
+        working-directory: ./api-gateway
+        run: mvn spring-boot:build-image
+
+      - name: Build Exchange Microservice Docker Image
+        working-directory: ./exchange-service
+        run: mvn clean package
+
+      - name: Build Book Microservice Docker Image
+        working-directory: ./book-service
+        run: mvn clean package
+
       - name: Docker Compose Build
         working-directory: .
         run: docker compose build
 
       - name: Tag Docker Images
         run: |
-          # Naming Server
           docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:latest
           docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
-
-          # API Gateway
-          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:latest ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
-
-          # Book Service
+          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
+          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
           docker tag ${{secrets.DOCKER_USERNAME}}/book-service:latest ${{secrets.DOCKER_USERNAME}}/book-service:${{github.RUN_ID}}
-
-          # Exchange Service
           docker tag ${{secrets.DOCKER_USERNAME}}/exchange-service:latest ${{secrets.DOCKER_USERNAME}}/exchange-service:${{github.RUN_ID}}
+
 
       - name: Push Docker Images to Docker Hub
         run: |
           docker push ${{secrets.DOCKER_USERNAME}}/naming-server:latest
           docker push ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
+          docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
           docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
+          docker push ${{secrets.DOCKER_USERNAME}}/book-service:latest
           docker push ${{secrets.DOCKER_USERNAME}}/book-service:${{github.RUN_ID}}
+          docker push ${{secrets.DOCKER_USERNAME}}/exchange-service:latest
           docker push ${{secrets.DOCKER_USERNAME}}/exchange-service:${{github.RUN_ID}}
