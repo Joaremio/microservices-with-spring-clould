@@ -1,0 +1,10 @@
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\config\OpenApiConfiguration.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\config\ZipkinCustomSenderConfig.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\controller\BookController.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\controller\FooBarController.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\dto\Exchange.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\environment\InstanceInformationService.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\model\Book.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\proxy\ExchangeProxy.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\repository\BookRepository.java
+C:\Users\joare\Documents\microservices\book-service\src\main\java\br\ufrn\imd\Startup.java

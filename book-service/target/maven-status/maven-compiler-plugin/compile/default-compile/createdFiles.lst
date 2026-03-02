@@ -1,0 +1,10 @@
+br\ufrn\imd\dto\Exchange.class
+br\ufrn\imd\config\ZipkinCustomSenderConfig.class
+br\ufrn\imd\environment\InstanceInformationService.class
+br\ufrn\imd\controller\FooBarController.class
+br\ufrn\imd\model\Book.class
+br\ufrn\imd\Startup.class
+br\ufrn\imd\controller\BookController.class
+br\ufrn\imd\config\OpenApiConfiguration.class
+br\ufrn\imd\proxy\ExchangeProxy.class
+br\ufrn\imd\repository\BookRepository.class
