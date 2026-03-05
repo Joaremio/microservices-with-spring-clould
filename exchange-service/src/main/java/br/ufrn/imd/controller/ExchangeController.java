@@ -44,11 +44,14 @@ public class ExchangeController {
         if(exchange == null){
             throw new RuntimeException("Exchange not found");
         }
+        String port = instanceInformationService.retrieveServerPort();
+        String host = instanceInformationService.retrieveInstanceInfo();
 
         BigDecimal conversionFactor = exchange.getConversionFactor();
         BigDecimal convertedValue = conversionFactor.multiply(amount);
         exchange.setConvertedValue(convertedValue.doubleValue());
-        exchange.setEnvironment("PORT " + instanceInformationService.retrieveServerPort());
+
+        exchange.setEnvironment(host + " VERSION: kube-v1 PORT " + port);
 
         return exchange;
     }

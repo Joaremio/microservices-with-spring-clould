@@ -8,6 +8,8 @@ import br.ufrn.imd.proxy.ExchangeProxy;
 import br.ufrn.imd.repository.BookRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="Book Endpoint")
 @RestController
 public class BookController {
+
+    private Logger logger = LoggerFactory.getLogger(BookController.class);
 
     @Autowired
     private InstanceInformationService instanceInformationService;
@@ -63,14 +67,19 @@ public class BookController {
             @PathVariable String currency
     ){
         String port = instanceInformationService.retrieveServerPort();
+        String host = instanceInformationService.retrieveInstanceInfo();
 
         var book = bookRepository.findById(id).orElseThrow();
+
+        logger.info("Calculando o preco de {} para {}", book.getPrice(), book.getCurrency());
 
 
         Exchange exchange = proxy.getExchange(book.getPrice(),"USD",currency);
 
 
-        book.setEnvironment("BOOK PORT: " + port  + " EXCHANGE PORT: " + exchange.getEnvironment());
+        book.setEnvironment("BOOK HOST: " + host + " PORT: " + port +
+                " VERSION: kube-v1 " +
+                "EXCHANGE HOST: " + exchange.getEnvironment());
         book.setPrice(exchange.getConvertedValue().doubleValue());
         book.setCurrency(currency);
 

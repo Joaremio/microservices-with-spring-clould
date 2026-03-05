@@ -23,13 +23,13 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
 
-      - name: Build Eureka Naming Server Docker Image
-        working-directory: ./naming-server
-        run: mvn spring-boot:build-image -DskipTests
-
-      - name: Build API Gateway Docker Image
-        working-directory: ./api-gateway
-        run: mvn spring-boot:build-image -DskipTests
+#      - name: Build Eureka Naming Server Docker Image
+#        working-directory: ./naming-server
+#        run: mvn spring-boot:build-image -DskipTests
+#
+#      - name: Build API Gateway Docker Image
+#        working-directory: ./api-gateway
+#        run: mvn spring-boot:build-image -DskipTests
 
       - name: Build Exchange Microservice Docker Image
         working-directory: ./exchange-service
@@ -45,21 +45,25 @@ jobs:
 
       - name: Tag Docker Images
         run: |
-          docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:latest
-          docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
-          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
-          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
+#          docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:latest
+#          docker tag ${{secrets.DOCKER_USERNAME}}/naming-server:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
+#          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
+#          docker tag ${{secrets.DOCKER_USERNAME}}/api-gateway:0.0.1-SNAPSHOT ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
           docker tag ${{secrets.DOCKER_USERNAME}}/book-service:latest ${{secrets.DOCKER_USERNAME}}/book-service:${{github.RUN_ID}}
+          docker tag ${{secrets.DOCKER_USERNAME}}/book-service:latest ${{secrets.DOCKER_USERNAME}}/book-service:kube-v1
           docker tag ${{secrets.DOCKER_USERNAME}}/exchange-service:latest ${{secrets.DOCKER_USERNAME}}/exchange-service:${{github.RUN_ID}}
-
+          docker tag ${{secrets.DOCKER_USERNAME}}/exchange-service:latest ${{secrets.DOCKER_USERNAME}}/exchange-service:kube-v1
 
       - name: Push Docker Images to Docker Hub
         run: |
-          docker push ${{secrets.DOCKER_USERNAME}}/naming-server:latest
-          docker push ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
-          docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
-          docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
+#          docker push ${{secrets.DOCKER_USERNAME}}/naming-server:latest
+#          docker push ${{secrets.DOCKER_USERNAME}}/naming-server:${{github.RUN_ID}}
+#          docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:latest
+#          docker push ${{secrets.DOCKER_USERNAME}}/api-gateway:${{github.RUN_ID}}
           docker push ${{secrets.DOCKER_USERNAME}}/book-service:latest
+          docker push ${{secrets.DOCKER_USERNAME}}/book-service:kube-v1
           docker push ${{secrets.DOCKER_USERNAME}}/book-service:${{github.RUN_ID}}
+               
           docker push ${{secrets.DOCKER_USERNAME}}/exchange-service:latest
+          docker push ${{secrets.DOCKER_USERNAME}}/exchange-service:kube-v1
           docker push ${{secrets.DOCKER_USERNAME}}/exchange-service:${{github.RUN_ID}}
