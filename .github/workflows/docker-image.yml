@@ -21,15 +21,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'adopt'
-
-#      - name: Build Eureka Naming Server Docker Image
-#        working-directory: ./naming-server
-#        run: mvn spring-boot:build-image -DskipTests
-#
-#      - name: Build API Gateway Docker Image
-#        working-directory: ./api-gateway
-#        run: mvn spring-boot:build-image -DskipTests
+          distribution: 'temurin'
 
       - name: Build Exchange Microservice Docker Image
         working-directory: ./exchange-service
